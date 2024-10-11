@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <title>CRUD</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        body{
+            font-family: system-ui;
+            background:#222;
+        }
+        .CRUDS{
+            width: 80%;
+            margin: auto;
+        }
+        .head{
+            text-align: center;
+            margin: 10px 0px;
+            color: white;
+        }
+        input{
+            width: 100%;
+            height: 50px;
+            outline: none;
+            border: none;
+            background: #111;
+            margin: 6px 0px;
+            padding: 4px;
+            border-radius: 4px;
+            color: #fff;
+            
+        }
+        input:focus{
+            background: #000;
+            transform: scale(1.1);
+        }
+        #total{
+            background-color: rgba(148, 14, 14, 0.379);
+            padding: 8px 10px;
+            border-radius: 5px;
+        }
+        #total::before{
+            content: 'Total: ';
+        }
+        button{
+            width: 100%;
+            height: 50px;
+            outline: none;
+            border: none;
+            cursor: pointer;
+            background: #5a3232;
+            margin: 6px 0px;
+            padding: 20px;
+            border-radius: 4px;
+            color: #fff;
+            transition: background 0.5s;
+        }
+        button:hover{
+            background:#784747 ;
+        }
+        
+
+       .table th, .table td {
+        color: white; 
+        background: #323131;
+    }
+       
+
+    </style>
+</head>
+<body>
+    <div class="CRUDS">
+        <!-- HEAD -->
+        <div class="head">
+            <h1>CRUD</h1>
+            <p>PRODUCT MANAGEMENT SYSTEM</p>
+        </div>
+        <!-- // HEAD // -->
+
+        <!-- INPUT -->
+        <div class="input">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12"><input type="text" placeholder="Title" id="title"></div>
+            </div>
+            <div class="row price">
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg"><input onkeyup="getTotal()" type="text" placeholder="Price" id="price"></div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg"><input onkeyup="getTotal()" type="text" placeholder="Taxes" id="taxes"></div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg"><input onkeyup="getTotal()" type="text" placeholder="Ads" id="ads"></div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg"><input onkeyup="getTotal()" type="text" placeholder="Discount" id="discount"></div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg" style="padding: 18px; padding-right: 3px;"><span style="color: white; " id="total"> </span></div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-12"><input type="number" placeholder="count" id="count"></div>
+            <div class="col-sm-12 col-md-12 col-lg-12"><input type="text" placeholder="category" id="category"></div>
+            <button class="submit" id="submit">Create</button>
+
+        </div>
+        <!-- // INPUT // -->
+
+        <!-- OUTPUT -->
+        <div class="output">
+            <div class="searchBlock">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12"><input type="text" placeholder="Search" id="search" onkeyup="searchData(this.value)"></div>
+                </div>
+                
+                <div class="row btnSearch">
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"> <button onclick="getSearchMood(this.id)"  id="searchTitle">Search by title</button></div>
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"> <button onclick="getSearchMood(this.id)" id="searchCategory">Search by category</button></div>
+                </div>
+                
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12" id="btnDelete"></div>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>title</th>
+                        <th>price</th>
+                        <th>taxes</th>
+                        <th>ads</th>
+                        <th>total</th>
+                        <th>discount</th>
+                        <th>category</th>
+                        <th>update</th>
+                        <th>delete</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    <!-- Dynamic content will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        <!-- // OUTPUT // -->
+    </div>
+
+</body>
+<script>
+    let title = document.getElementById('title')
+    let price = document.getElementById('price')
+    let taxes = document.getElementById('taxes')
+    let ads = document.getElementById('ads')
+    let discount = document.getElementById('discount')
+    let total = document.getElementById('total')
+    let count = document.getElementById('count')
+    let category = document.getElementById('category')
+    let submit = document.getElementById('submit')
+    let mood = 'create'
+    function getTotal(){
+        if(price.value !=''){
+            let result = (+price.value + +taxes.value+ +ads.value) - +discount.value
+            total.innerHTML = result
+            total.style.background = '#040'
+        }else{
+            total.innerHTML = ''
+            total.style.background ='rgba(148, 14, 14, 0.379)';
+
+        }
+    }
+    let createCrud;
+    if(localStorage.product){
+        createCrud = JSON.parse(localStorage.product)
+    }else{
+        createCrud = []
+    }
+    
+    submit.onclick = function(){
+        
+        let newCreate = {
+            title: title.value.toLowerCase(),
+            price:price.value,
+            taxes:taxes.value,
+            ads: ads.value,
+            discount: discount.value,
+            total:total.innerHTML,
+            count: count.value,
+            category: category.value.toLowerCase(),
+        }  
+        //COUNT OF PRODUCT   
+        if(title.value !='' && price.value && taxes.value && ads.value && discount.value && count.value && category.value){
+            if(mood == 'create'){
+                if(newCreate.count>1){
+                    for(let i=0 ; i<newCreate.count ; i++){
+                        createCrud.push(newCreate)
+                    }
+                }else{
+                    createCrud.push(newCreate)
+                }            
+            } else{
+                createCrud[temp] = newCreate
+                mood = 'create'
+                submit.innerHTML= 'create'
+            } clearInformation()
+        }
+     
+
+        
+        localStorage.setItem('product', JSON.stringify(createCrud))
+        
+        showData()
+
+    }
+    function clearInformation(){
+        title.value =''
+        price.value =''
+        taxes.value =''
+        ads.value =''
+        discount.value =''
+        total.innerHTML =''
+        count.value =''
+        category.value =''
+    }
+
+    function showData(){
+        getTotal()
+        let content =''
+        for(let i =0; i<createCrud.length ; i++){
+            content += `
+                <tr>
+                    <td>${i}</td>
+                    <td>${createCrud[i].title}</td>
+                    <td>${createCrud[i].price}</td>
+                    <td>${createCrud[i].taxes}</td>
+                    <td>${createCrud[i].ads}</td>
+                    <td>${createCrud[i].total}</td>
+                    <td>${createCrud[i].discount}</td>
+                    <td>${createCrud[i].category}</td>
+                    <td><button type="button" class="btn btn-light update" style="background: #5a3232; color:white;    height: 40px; width: 70%;" onclick ="updateTask(${i})">update</button></td>
+                    <td><button type="button" class="btn btn-light delete" style="background: #5a3232; color:white;   height: 40px; width: 70%; " onclick ="deleteTask(${i})">delete</button></td>
+                </tr>
+            `
+        }
+        document.getElementById('tbody').innerHTML = content
+        let btnDelete = document.getElementById('btnDelete')
+        
+        if(createCrud.length > 0){
+            btnDelete.innerHTML = 
+            `
+                <button onclick="deleteAll()" id="searchTitle">Delete All(${createCrud.length})</button>
+            `
+
+        }else{
+            btnDelete.innerHTML = ''
+        }        
+    }
+    showData()
+    //DELETE
+    function deleteTask(i){
+        createCrud.splice(i,1)
+        localStorage.product = JSON.stringify(createCrud)
+        showData()
+    } 
+    function deleteAll(){
+        createCrud = []; // Reset the array
+        localStorage.removeItem('product'); // Clear local storage
+        showData(); 
+    }
+    //UPDATE
+    function updateTask(i){
+        title.value = createCrud[i].title
+        price.value = createCrud[i].price
+        taxes.value = createCrud[i].taxes
+        ads.value = createCrud[i].ads
+        discount.value = createCrud[i].discount
+        count.value = createCrud[i].count
+        category.value = createCrud[i].category
+        getTotal()
+        count.style.display ='none'
+        submit.innerHTML = 'Update'
+        mood='update'
+        temp = i
+        scroll({
+            top:0,
+            behavior:"smooth"
+        })
+
+    }
+     // SEARCH
+    let search = document.getElementById('search')
+     let searchMood = 'title'
+    function getSearchMood(id){
+        if(id == 'searchTitle'){
+            searchMood = 'title'
+            search.Placeholder = 'Search by title'
+        }
+        else{
+            searchMood = 'category'
+            search.Placeholder = 'Search by category'
+        }
+        search.focus()
+        search.value = ''
+    }
+    function searchData(value){
+        let content=''
+        if(searchMood == 'title')
+        {
+            
+            for(let i=0 ; i<createCrud.length; i++){
+                if(createCrud[i].title.includes(value.toLowerCase())){
+                    content += `
+                    <tr>
+                        <td>${i}</td>
+                        <td>${createCrud[i].title}</td>
+                        <td>${createCrud[i].price}</td>
+                        <td>${createCrud[i].taxes}</td>
+                        <td>${createCrud[i].ads}</td>
+                        <td>${createCrud[i].total}</td>
+                        <td>${createCrud[i].discount}</td>
+                        <td>${createCrud[i].category}</td>
+                        <td><button type="button" class="btn btn-light update" style="background: #5a3232; color:white; width:66px; height:30px" onclick ="updateTask(${i})">update</button></td>
+                        <td><button type="button" class="btn btn-light delete" style="background: #5a3232; color:white; width:66px; height:30px" onclick ="deleteTask(${i})">delete</button></td>
+                    </tr>
+                     `
+                }
+            }
+        }else{
+            for(let i=0 ; i<createCrud.length; i++){
+                if(createCrud[i].category.includes(value.toLowerCase())){
+                    content += `
+                    <tr>
+                        <td>${i}</td>
+                        <td>${createCrud[i].title}</td>
+                        <td>${createCrud[i].price}</td>
+                        <td>${createCrud[i].taxes}</td>
+                        <td>${createCrud[i].ads}</td>
+                        <td>${createCrud[i].total}</td>
+                        <td>${createCrud[i].discount}</td>
+                        <td>${createCrud[i].category}</td>
+                        <td><button type="button" class="btn btn-light update" style="background: #5a3232; color:white; width:66px; height:30px" onclick ="updateTask(${i})">update</button></td>
+                        <td><button type="button" class="btn btn-light delete" style="background: #5a3232; color:white; width:66px; height:30px" onclick ="deleteTask(${i})">delete</button></td>
+                    </tr>
+                     `
+                }
+            }
+        }
+        document.getElementById('tbody').innerHTML = content
+    }
+
+
+
+
+    
+</script>
+</html>
